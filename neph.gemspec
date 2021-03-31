@@ -9,7 +9,6 @@ Gem::Specification.new do |spec|
   spec.email = ["stex@hey.com"]
 
   spec.summary = "Write a short summary, because RubyGems requires one."
-  spec.description = "Write a longer description or delete this line."
   spec.homepage = "https://github.com/stex/neph"
   spec.license = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
@@ -28,7 +27,11 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "dry-cli", "~> 0.6"
+  spec.add_dependency "dry-container", "~> 0.7"
+  spec.add_dependency "dry-initializer", "~> 3.0"
   spec.add_dependency "ruby-next"
+  spec.add_dependency "sshkit", "~> 1.21"
 
-  spec.add_development_dependency "standard", "~> 1.0.4"
+  spec.add_development_dependency "pry"
+  spec.add_development_dependency "standard", "~> 1.0"
 end

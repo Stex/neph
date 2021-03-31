@@ -1,9 +1,12 @@
 require "dry/cli"
 require "neph"
-require "neph/version"
+require "neph/cli/command"
+require "yaml"
+require "json"
 
 module Neph
   module CLI
+    # noinspection ALL
     module Commands
       extend Dry::CLI::Registry
 
@@ -15,27 +18,19 @@ module Neph
         end
       end
 
-      class Pwd < Dry::CLI::Command
-        desc "Print current directory"
-
-        def call(*)
-          puts Dir.pwd
-        end
-      end
-
-      class Deploy < Dry::CLI::Command
-        desc "Execute a task"
-
-        argument :task, type: :string, required: true, desc: "Task to be executed"
-        argument :dirs, type: :array, required: false, desc: "Optional directories"
-
-        def call(task:, dirs: [], **)
-          puts "exec - task: #{task}, dirs: #{dirs.inspect}"
-        end
-      end
-
       register "version", Version, aliases: ["v", "-v", "--version"]
-      register "pwd", Pwd
+
+      ::Neph::Config.environments.each do |env|
+        ::Neph::Config.tasks.each do |task|
+          register("#{env.name} #{task.name}", Class.new(Neph::CLI::Command) {
+            desc task.name
+            option :dry_run, desc: "Do not actually perform any steps, only print them", type: :boolean, default: false
+
+            self.task = task
+            self.environment = env
+          })
+        end
+      end
     end
 
     def self.start

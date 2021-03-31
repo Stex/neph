@@ -1,0 +1,34 @@
+environments:
+  production:
+    workdir: "~/containers/pricontics"
+    servers:
+      - host: app.pricontics.com
+        alias: app1
+        user: root
+        port: 42042
+        roles: ["db", "api"]
+      - host: charon.stex.codes
+        alias: app2
+        user: root
+        port: 22
+        roles: ["background_jobs"]
+tasks:
+  migrate_database:
+    description: "Migrates the database to the latest version"
+    on_servers: [app1]
+    on_roles: ["db"]
+    steps:
+      - command: run
+        payload: docker-compose run app bin/rake db:migrate
+  pull_image:
+    description: "Pulls the latest image from the docker registry"
+    on_roles: "all"
+    steps:
+      - run: "docker-compose pull"
+      - run_locally: "echo hallo"
+chains:
+  deploy:
+    description: "Performs a full deploy"
+    tasks:
+      - pull_image
+      - migrate_database
